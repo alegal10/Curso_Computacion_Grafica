@@ -1,3 +1,5 @@
+//Práctica 2                Galindo Granados Abner Alejandro
+//Fecha de entrega:         320001567
 #include<iostream>
 
 //#define GLEW_STATIC
@@ -59,14 +61,83 @@ int main() {
 
 	// Set up vertex data (and buffer(s)) and attribute pointers
 	float vertices[] = {
+		//Cuerpo
+		//Primer Trapecio
+		-0.4f, 0.1f, 0.0f,    0.0f,0.0f,1.0f,
+		-0.5f, -0.4f,0.0f,    0.0f,0.0f,1.0f,
+		0.0f, -0.6f, 0.0f,    0.0f,0.0f,1.0f,
+		0.45f, -0.4f, 0.0f,   0.0f,0.0f,1.0f,
+		0.32f, 0.1f, 0.0f,    0.0f,0.0f,1.0f,
+
+		//Segundo Trapecio
+		-0.4f, 0.1f, 0.0f,    0.0f,0.0f,1.0f,
+		0.32f, 0.1f, 0.0f,    0.0f,0.0f,1.0f,
+		0.09f, 0.47f, 0.0f,   0.0f,0.0f,1.0f,
+		-0.15f, 0.47f, 0.0f,  0.0f,0.0f,1.0f,
+
+		//Tercer trapacio izq
+		-0.5f, -0.4f, 0.0f,  0.0f,0.0f,1.0f,
+		-0.51f, -0.76f, 0.0f, 0.0f,0.0f,1.0f,
+		-0.29f, -0.86f, 0.0f, 0.0f,0.0f,1.0f,
+		0.0f, -0.6f, 0.0f,    0.0f,0.0f,1.0f,
+
+		//Cuarto trapecio der
+		0.0f, -0.6f, 0.0f,    0.0f,0.0f,1.0f,
+		0.45f, -0.4f, 0.0f,   0.0f,0.0f,1.0f,
+		0.49f, -0.76f, 0.0f,  0.0f,0.0f,1.0f,
+		0.27f, -0.86f, 0.0f,  0.0f,0.0f,1.0f,
+
+		//Pentagono
+		0.0f, -0.6f, 0.0f,    0.0f,0.0f,1.0f,
+		-0.29f, -0.86f, 0.0f, 0.0f,0.0f,1.0f,
+		-0.09f, -0.99f, 0.0f,   0.0f,0.0f,1.0f,
+		0.09f, -0.99f, 0.0f,   0.0f,0.0f,1.0f,
+		0.27f, -0.86f, 0.0f,  0.0f,0.0f,1.0f,
+
+		//Patas
+		//Izquierda
+		//Triángulo Izq arriba
+		-0.51f, -0.76f, 0.0f, 0.0f,0.0f,1.0f,
+		-0.29f, -0.86f, 0.0f, 0.0f,0.0f,1.0f,
+		-0.38f, -0.99f, 0.0f,  0.0f,0.0f,1.0f,
+		//Triángulo Izq abajo
+		-0.29f, -0.86f, 0.0f, 0.0f,0.0f,1.0f,
+		-0.38f, -0.99f, 0.0f,  0.0f,0.0f,1.0f,
+		-0.09f, -0.99f, 0.0f,   0.0f,0.0f,1.0f,
+
+		//Derecha
+		//Triángulo Der arriba
+		0.27f, -0.86f, 0.0f,  0.0f,0.0f,1.0f,
+		0.49f, -0.76f, 0.0f,  0.0f,0.0f,1.0f,
+		0.38f, -0.99f, 0.0f,  0.0f,0.0f,1.0f,
+		//Triángulo Der abajo
+		0.27f, -0.86f, 0.0f,  0.0f,0.0f,1.0f,
+		0.38f, -0.99f, 0.0f,  0.0f,0.0f,1.0f,
+		0.09f, -0.99f, 0.0f,   0.0f,0.0f,1.0f,
+		
+		//Pluma Izq
+		-0.5f, -0.4f,0.0f,    0.0f,0.0f,1.0f,
+		-0.51f, -0.76f, 0.0f, 0.0f,0.0f,1.0f,
+		-0.69f, -0.48f, 0.0f, 0.0f,0.0f,1.0f,
+		-0.6f, -0.05f, 0.0f,  0.0f,0.0f,1.0f,
+		//Pluma Der
+		0.45f, -0.4f, 0.0f,   0.0f,0.0f,1.0f,
+		0.49f, -0.76f, 0.0f,  0.0f,0.0f,1.0f,
+		0.64f, -0.48f, 0.0f,  0.0f,0.0f,1.0f,
+		0.51, -0.05f, 0.0f,   0.0f,0.0f,1.0f,
+
+
+
 		0.5f,  0.5f, 0.0f,    0.0f,0.0f,1.0f,  // top right
 		0.5f, -0.5f, 0.0f,    0.0f,1.0f,0.0f,  // bottom right
 		-0.5f, -0.5f, 0.0f,   1.0f,0.0f,0.0f,  // bottom left
 		-0.5f,  0.5f, 0.0f,   1.0f,0.0f,1.0f, // top left 
 	};
 	unsigned int indices[] = {  // note that we start from 0!
-		0,2,3,// second Triangle
-		0,1,3,
+		//Patas
+		//Triángulo Izq arriba
+		22,23,24,
+		//0,1,3,
 		
 		
 	};
@@ -120,6 +191,36 @@ int main() {
         ourShader.Use();
         glBindVertexArray(VAO);
 
+		//Primer Trapecio
+		glDrawArrays(GL_LINE_LOOP, 0, 5);
+
+		//Segundo Trapecio
+		glDrawArrays(GL_LINE_LOOP, 5, 4);
+
+		//Tercer trapecio Izq
+		glDrawArrays(GL_LINE_LOOP, 9, 4);
+
+		//Cuarto trapecio Der
+		glDrawArrays(GL_LINE_LOOP, 13, 4);
+
+		//Pentágono
+		glDrawArrays(GL_LINE_LOOP, 17, 5);
+
+		//Pata Izquierda Arriba
+		glDrawElements(GL_TRIANGLES, 22,GL_UNSIGNED_INT,0);
+		//Pata Izquierda Abajo
+		glDrawArrays(GL_TRIANGLES, 25, 3);
+
+		//Pata Derecha Arriba
+		glDrawArrays(GL_TRIANGLES, 28, 3);
+		//Pata Derecha Abajo
+		glDrawArrays(GL_TRIANGLES, 31, 3);
+
+		//Pluma Izq
+		glDrawArrays(GL_LINE_LOOP, 34, 4);
+		//Pluma Der
+		glDrawArrays(GL_LINE_LOOP, 38, 4);
+
 		//Punto azul en el origen
         glPointSize(10);
 		//Tres puntos del arreglo comenzando por el elemento 1
@@ -129,13 +230,13 @@ int main() {
         //glDrawArrays(GL_LINES,2,2);
 		
 		// Se dibuja un cuadrado
-        //glDrawArrays(GL_LINE_LOOP,0,4);
+        //glDrawArrays(GL_LINE_LOOP,0,5);
         
 		//Triangulo desde el elemento 1
         //glDrawArrays(GL_TRIANGLES,1,3);{
 		
 		//Triangulos con elementos tomados manualmente
-        glDrawElements(GL_TRIANGLES, 3,GL_UNSIGNED_INT,0);
+        //glDrawElements(GL_TRIANGLES, 3,GL_UNSIGNED_INT,0);
 
         
         

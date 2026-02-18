@@ -25,7 +25,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);*/
 
-	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Dibujo de Primitivas en 2D", NULL, NULL);
+	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Galindo Granados Abner Alejandro", NULL, NULL);
 	glfwSetFramebufferSizeCallback(window, resize);
 	
 	//Verificaci�n de errores de creacion  ventana
@@ -398,6 +398,7 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 17, 3);
 
 		//Pata Izquierda Arriba
+		//glDrawArrays(GL_TRIANGLES, 22, 3);
 		glDrawElements(GL_TRIANGLES, 22,GL_UNSIGNED_INT,0);
 		//Pata Izquierda Abajo
 		glDrawArrays(GL_TRIANGLES, 25, 3);
@@ -406,7 +407,7 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 28, 3);
 		//Pata Derecha Abajo
 		glDrawArrays(GL_TRIANGLES, 31, 3);
-
+		
 		//Pluma Izq
 		glDrawArrays(GL_LINE_LOOP, 34, 4);
 		//Color
@@ -414,10 +415,11 @@ int main() {
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(21 * sizeof(unsigned int)));
 		//Pluma Der
 		glDrawArrays(GL_LINE_LOOP, 38, 4);
+		
 		//Color
 		glDrawArrays(GL_TRIANGLES, 38, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(24 * sizeof(unsigned int)));
-
+		
 		//Ala izquierda
 		glDrawArrays(GL_LINE_LOOP, 42, 6);
 		glDrawArrays(GL_LINE_LOOP, 48, 4);
@@ -437,6 +439,7 @@ int main() {
 		glDrawArrays(GL_LINE_LOOP, 57, 6);
 		glDrawArrays(GL_LINE_LOOP, 63, 4);
 		glDrawArrays(GL_LINE_LOOP, 67, 5);
+
 		//Color
 		glDrawArrays(GL_TRIANGLES, 57, 3);
 		glDrawArrays(GL_TRIANGLES, 60, 3);
@@ -455,6 +458,7 @@ int main() {
 		glDrawArrays(GL_LINE_LOOP, 79, 4);
 		glDrawArrays(GL_LINE_LOOP, 83, 4);
 		glDrawArrays(GL_LINE_LOOP, 87, 4);
+		
 		//Color
 		glDrawArrays(GL_TRIANGLES, 72, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(51 * sizeof(unsigned int)));
@@ -464,16 +468,18 @@ int main() {
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(57 * sizeof(unsigned int)));
 		glDrawArrays(GL_TRIANGLES, 87, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(60 * sizeof(unsigned int)));
-
+		
 		//Cabeza
 		glDrawArrays(GL_LINE_LOOP, 91, 11);
+		
 		//PICO
 		//Color
 		glDrawArrays(GL_TRIANGLES, 102, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(84 * sizeof(unsigned int)));
-
+		
 		//CARA izq color
 		glDrawArrays(GL_LINES, 106, 2);
+		
 		glDrawArrays(GL_TRIANGLES, 124, 3);
 		glDrawArrays(GL_TRIANGLES, 126, 3);
 		glDrawArrays(GL_TRIANGLES, 128, 3);
@@ -481,9 +487,11 @@ int main() {
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(93 * sizeof(unsigned int)));
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(96 * sizeof(unsigned int)));
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(99 * sizeof(unsigned int)));
-
+		
 		//Cara Der color
+		
 		glDrawArrays(GL_LINES, 108, 2);
+		
 		glDrawArrays(GL_TRIANGLES, 132, 3);
 		glDrawArrays(GL_TRIANGLES, 134, 3);
 		glDrawArrays(GL_TRIANGLES, 136, 3);
@@ -491,12 +499,13 @@ int main() {
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(105 * sizeof(unsigned int)));
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(108 * sizeof(unsigned int)));
 		
-
+		
 		// PICO CENTRO
 		glDrawArrays(GL_TRIANGLES, 110, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(87 * sizeof(unsigned int)));
 
 		glDrawArrays(GL_LINES, 114, 2);
+		
 		//Color
 		glDrawArrays(GL_TRIANGLES, 92, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(63 * sizeof(unsigned int)));
@@ -510,7 +519,7 @@ int main() {
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(78 * sizeof(unsigned int)));
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(81 * sizeof(unsigned int)));
 
-
+		
 		//Ojo dentro Izq
 		glDrawArrays(GL_TRIANGLES, 116, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(111 * sizeof(unsigned int)));

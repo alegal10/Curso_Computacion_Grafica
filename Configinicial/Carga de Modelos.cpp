@@ -1,5 +1,5 @@
-//Previo #6                              Galindo Granados Abner Alejandro                    
-//Fecha de entrega: 10 de marzo de 2026  320001567
+//Práctica #6                              Galindo Granados Abner Alejandro                    
+//Fecha de entrega: 15 de marzo de 2026    320001567
 // Std. Includes
 #include <string>
 
@@ -34,7 +34,7 @@ void DoMovement( );
 
 
 // Camera
-Camera camera( glm::vec3( 0.0f, 0.0f, 3.0f ) );
+Camera camera( glm::vec3( 0.0f, 0.0f, 10.0f ) );
 bool keys[1024];
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -98,7 +98,10 @@ int main( )
     // Load models
     Model car((char*)"Models/carro.obj");
     Model dog((char*)"Models/RedDog.obj");
-    glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 100.0f );
+    Model aeropuerto((char*)"Models/aeropuerto.obj");
+	Model humano((char*)"Models/humano.obj");
+	Model maleta((char*)"Models/maleta.obj");
+    glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 1000.0f );
     
   
 
@@ -124,17 +127,40 @@ int main( )
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-        // Draw the loaded model
-        glm::mat4 model(1);
+        // --- Dibujar Aeropuerto ---
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(0.001f, 0.001f, 0.001f));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        dog.Draw(shader);
+        aeropuerto.Draw(shader);
 
-       
-		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+        // --- Dibujar Humano ---
+        model = glm::translate(model, glm::vec3(1000.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        humano.Draw(shader);
+
+        //--- Dibujar Maleta ---
+        glm::mat4 modelmaleta = glm::mat4(1.0f);
+        modelmaleta = glm::scale(modelmaleta, glm::vec3(0.05f, 0.05f, 0.05f));
+        modelmaleta = glm::translate(modelmaleta, glm::vec3(20.0f, 0.0f, 1.0f));
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelmaleta));
+        maleta.Draw(shader);
+
+        //---Dibujar Carro---
+        glm::mat4 modelcarro = glm::mat4(1.0f);
+        modelcarro = glm::translate(modelcarro, glm::vec3(1.0f, 0.0f, 0.5f));
+        modelcarro = glm::scale(modelcarro, glm::vec3(0.2f, 0.2f, 0.2f));
+        modelcarro = glm::rotate(modelcarro, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelcarro));
         car.Draw(shader);
+       
+		//Dibujar Perro
+        glm::mat4 modelperro = glm::mat4(1.0f);
+        modelperro = glm::translate(modelperro, glm::vec3(1.05f, 0.03f, 0.0f));
+        modelperro = glm::scale(modelperro, glm::vec3(0.07f, 0.07f, 0.07f));
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelperro));
+        dog.Draw(shader);
+		
         // Swap the buffers
         glfwSwapBuffers( window );
     }

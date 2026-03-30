@@ -19,12 +19,10 @@ in vec3 Normal;
 in vec2 TexCoords;
 
 out vec4 color;
-
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
-uniform Light light2;
-uniform sampler2D texture_diffuse; // Una sola 's'
+uniform sampler2D texture_diffuse; 
 
 void main() {
     vec3 norm = normalize(Normal);
@@ -40,20 +38,9 @@ void main() {
     vec3 diffuse1  = light.diffuse  * (diff1 * material.diffuse);
     vec3 specular1 = light.specular * (spec1 * material.specular);
 
-    // --- CÁLCULO LUZ 2 ---
-    vec3 lightDir2 = normalize(light2.position - FragPos);
-    float diff2 = max(dot(norm, lightDir2), 0.0);
-    vec3 reflectDir2 = reflect(-lightDir2, norm);
-    float spec2 = pow(max(dot(viewDir, reflectDir2), 0.0), material.shininess * 128.0f);
-    
-    vec3 ambient2  = light2.ambient  * material.ambient;
-    vec3 diffuse2  = light2.diffuse  * (diff2 * material.diffuse);
-    vec3 specular2 = light2.specular * (spec2 * material.specular);
-
     // --- RESULTADO FINAL ---
     // Sumamos los componentes de ambas luces
-    vec3 finalLight = (ambient1 + diffuse1 + specular1) + (ambient2 + diffuse2 + specular2);
-    
+    vec3 finalLight = (ambient1 + diffuse1 + specular1);
     // Multiplicamos por la textura del modelo
-    color = vec4(finalLight, 1.0) * texture(texture_diffuse, TexCoords);
+    color = vec4(finalLight, 1.0) * texture(texture_diffuse, TexCoords);  
 }

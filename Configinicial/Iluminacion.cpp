@@ -1,5 +1,5 @@
-//Previo 8                                      Galindo Granados Abner Alejandro
-//Fecha de entrega: 24 de marzo 2026            320001567
+//Práctica 8                                      Galindo Granados Abner Alejandro
+//Fecha de entrega: 29 de marzo 2026              320001567
 // Std. Includes
 #include <string>
 
@@ -40,14 +40,15 @@ bool firstMouse = true;
 
 
 // Light attributes
-glm::vec3 lightPos(0.5f, 0.5f, 2.5f);
-glm::vec3 lightPos2(3.0f, 0.5f, 2.5f);
-float movelightPos = 0.0f;
-float movelightPos2 = 0.0f;
+glm::vec3 lightPos(0.5f, 4.0f, 0.0f);
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 float rot = 0.0f;
 bool activanim = false;
+
+float lightAngle = 3.1416f;
+float lightRadius = 8.0f;
+bool modoDia = true;        
 
 int main()
 {
@@ -106,8 +107,13 @@ int main()
 
     // Load models
     Model red_dog((char*)"Models/RedDog.obj");
-    Model seaMonster((char*)"Models/seamonster.obj");
-	
+    Model car((char*)"Models/carro.obj");
+    Model aeropuerto((char*)"Models/aeropuerto.obj");
+    Model humano((char*)"Models/humano.obj");
+    Model maleta((char*)"Models/maleta.obj");
+    Model moon((char*)"Models/Moon.obj");
+    Model sun((char*)"Models/sun.obj");
+
     glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
     float vertices[] = {
@@ -209,86 +215,109 @@ int main()
         DoMovement();
 
         // Clear the colorbuffer
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if(modoDia)
+            glClearColor(0.3f, 0.5f, 0.7f, 1.0f);
+		else
+            glClearColor(0.05f, 0.05f, 0.15f, 1.0f);
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        // --- Cálculo de trayectoria circular --
+        lightPos.x = cos(lightAngle) * lightRadius;
+        lightPos.y = sin(lightAngle) * lightRadius;
+        lightPos.z = 0.0f;
 
         lightingShader.Use();
-        GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
+        
         GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
-        glUniform3f(lightPosLoc, lightPos.x + movelightPos, lightPos.y + movelightPos, lightPos.z + movelightPos);
         glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
 
-
-        // Set lights properties
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.1f, 0.0f, 0.0f);
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 0.7f, 0.0f, 0.0f);
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 1.0f, 0.0f, 0.0f);
-
-        //Luz 2 
-        GLint lightPosLoc2 = glGetUniformLocation(lightingShader.Program, "light2.position");
-		glUniform3f(lightPosLoc2, lightPos2.x + movelightPos2, lightPos2.y + movelightPos2, lightPos2.z + movelightPos2);
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.ambient"), 0.0f, 0.1f, 0.1f); 
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.diffuse"), 0.0f, 0.8f, 0.8f);  
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.specular"), 0.8f, 1.0f, 1.0f);
-
-
+        if (modoDia) {
+            GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.position"), lightPos.x, lightPos.y, lightPos.z);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.4f, 0.4f, 0.35f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 1.0f, 0.95f, 0.8f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 1.0f, 1.0f, 0.9f);
+            //Material
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "material.ambient"), 1.0f, 1.0f, 1.0f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "material.diffuse"), 1.0f, 1.0f, 1.0f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"), 0.5f, 0.5f, 0.5f);
+            glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 32.0f);
+        }
+        else {
+            GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.position"), lightPos.x, lightPos.y, lightPos.z);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.1f, 0.1f, 0.2f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 0.4f, 0.4f, 0.7f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 0.9f, 0.9f, 1.0f);
+            //Material
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.7f, 0.7f, 0.7f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.7f, 0.7f, 0.7f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"), 0.8f, 0.8f, 1.0f);
+            glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 16.0f);
+        }
+        
         glm::mat4 view = camera.GetViewMatrix();
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-        // Set material properties
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.5f, 0.5f, 0.5f);
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.8f, 0.8f, 0.0f);
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"), 1.0f, 1.0f,1.0f);
-		glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 0.8f);
 
-
-
-
-
-
-        // Draw the loaded model
-        glm::mat4 model(1);
-        model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+        // --- Dibujar Aeropuerto ---
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(0.001f, 0.001f, 0.001f));
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glBindVertexArray(VAO);
-		red_dog.Draw(lightingShader);
+        aeropuerto.Draw(lightingShader);
 
-		model = glm::translate(model, glm::vec3(1.5f, -1.0f, 0.0f));    
-		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+        // --- Dibujar Humano ---
+        model = glm::translate(model, glm::vec3(1000.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		seaMonster.Draw(lightingShader);
+        humano.Draw(lightingShader);
 
+        //--- Dibujar Maleta ---
+        glm::mat4 modelmaleta = glm::mat4(1.0f);
+        modelmaleta = glm::scale(modelmaleta, glm::vec3(0.05f, 0.05f, 0.05f));
+        modelmaleta = glm::translate(modelmaleta, glm::vec3(20.0f, 0.0f, 1.0f));
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelmaleta));
+        maleta.Draw(lightingShader);
 
-       
-        //glDrawArrays(GL_TRIANGLES, 0, 36);
-        
+        //---Dibujar Carro---
+        glm::mat4 modelcarro = glm::mat4(1.0f);
+        modelcarro = glm::translate(modelcarro, glm::vec3(1.0f, 0.0f, 0.5f));
+        modelcarro = glm::scale(modelcarro, glm::vec3(0.2f, 0.2f, 0.2f));
+        modelcarro = glm::rotate(modelcarro, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelcarro));
+        car.Draw(lightingShader);
+
+        //Dibujar Perro
+        glm::mat4 modelperro = glm::mat4(1.0f);
+        modelperro = glm::translate(modelperro, glm::vec3(1.05f, 0.03f, 0.0f));
+        modelperro = glm::scale(modelperro, glm::vec3(0.07f, 0.07f, 0.07f));
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelperro));
+        red_dog.Draw(lightingShader);
 
         glBindVertexArray(0);
-
-
 
 
         lampshader.Use();
         glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glBindVertexArray(VAO);
-
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos + movelightPos);
-        model = glm::scale(model, glm::vec3(0.3f));
-        glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos2 + movelightPos2); // La posición de la nueva luz
-        model = glm::scale(model, glm::vec3(0.3f));
-        glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
+  
+        if (modoDia) {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, lightPos);
+            model = glm::scale(model, glm::vec3(0.7f));
+            glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            sun.Draw(lampshader);  // Solo se dibuja el sol
+        }
+        else {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, lightPos); // La posición de la nueva luz
+            model = glm::scale(model, glm::vec3(0.2f));
+            glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            moon.Draw(lampshader); // Solo se dibuja la luna
+        }
+          
         glBindVertexArray(0);
 
         // Swap the buffers
@@ -354,31 +383,23 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
             keys[key] = false;
         }
     }
+    if (key == GLFW_KEY_N && action == GLFW_PRESS) {
+        modoDia = !modoDia;
+    }
 
     if (keys[GLFW_KEY_O])
     {
        
-        movelightPos += 0.1f;
+       lightAngle += 0.1f;
     }
 
     if (keys[GLFW_KEY_L])
     {
         
-        movelightPos -= 0.1f;
+        lightAngle -= 0.1f;
     }
-    if (keys[GLFW_KEY_I])
-    {
-
-        movelightPos2 += 0.1f;
-    }
-
-    if (keys[GLFW_KEY_K])
-    {
-
-        movelightPos2 -= 0.1f;
-    }
-
-
+    if (lightAngle > 3.14159f) lightAngle = 3.14159f;
+    if (lightAngle < 0.0f) lightAngle = 0.0f;
 }
 
 void MouseCallback(GLFWwindow* window, double xPos, double yPos)

@@ -1,5 +1,5 @@
-//Previo #10                                   Galindo Granados Abner Alejandro
-//Fecha de entrega: 14 abril de 2026           320001567 
+//Práctica #10                                   Galindo Granados Abner Alejandro
+//Fecha de entrega: 18 abril de 2026             320001567 
 #include <iostream>
 #include <cmath>
 
@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 
 // Other Libs
-#include "stb_image.h"
+#include "stb_image.h" 
 
 // GLM Mathematics
 #include <glm/glm.hpp>
@@ -31,7 +31,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 void MouseCallback(GLFWwindow *window, double xPos, double yPos);
 void DoMovement();
 void Animation();
-void Animation2();
+//void Animation2();
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -103,12 +103,18 @@ float vertices[] = {
 
 glm::vec3 Light1 = glm::vec3(0);
 //Anim
-float rotBall = 0;
-bool AnimBall = false;
-bool AnimBall2 = false;
-float transBall = 0;
-bool subir = true;
 
+//bool AnimBall = false;
+//bool AnimBall2 = false;
+bool Anim = false;
+float transBall = 1.0f;
+float rotBall = 180.0f;
+
+float transDog = 0;
+bool subir = true;
+bool golpear = false;
+float radOrbit = 2.0f;
+float rotDog = 0.0f;
 
 // Deltatime
 GLfloat deltaTime = 0.0f;	// Time between current frame and last frame
@@ -205,7 +211,7 @@ int main()
 		glfwPollEvents();
 		DoMovement();
 		Animation();
-		Animation2();
+		//Animation2();
 
 		// Clear the colorbuffer
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -295,6 +301,10 @@ int main()
 		model = glm::mat4(1);
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 0);
+		model = glm::rotate(model, glm::radians(rotDog), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(radOrbit, transDog, 0.0f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, radOrbit, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		Dog.Draw(lightingShader);
 
 		model = glm::mat4(1);
@@ -303,8 +313,7 @@ int main()
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1);
 		model = glm::rotate(model, glm::radians(rotBall), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		model = glm::translate(model, glm::vec3(0.0f, transBall, 0.0f));	
+		model = glm::translate(model, glm::vec3(radOrbit, transBall, 0.0f));	
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	    Ball.Draw(lightingShader); 
 		glDisable(GL_BLEND);  //Desactiva el canal alfa 
@@ -413,7 +422,7 @@ void DoMovement()
 }
 
 // Is called whenever a key is pressed/released via GLFW
-void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
 	{
@@ -438,7 +447,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 		if (active)
 		{
 			Light1 = glm::vec3(1.0f, 1.0f, 0.0f);
-			
+
 		}
 		else
 		{
@@ -447,41 +456,81 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 	}
 	if (keys[GLFW_KEY_N])
 	{
-		AnimBall = !AnimBall;
-		
-	}
-	if (keys[GLFW_KEY_M])
-	{
-		AnimBall2 = !AnimBall2;
+		Anim = !Anim;
 	}
 }
 void Animation() {
-	if (AnimBall)
-	{
-		rotBall += 0.2f;
-		//printf("%f", rotBall);
-	}
-	else
-	{
-		//rotBall = 0.0f;
-	}
-}
-void Animation2() {
-	if (AnimBall2) {
-		if (subir) {
-			transBall += 0.001f;
-			if (transBall >= pointLightPositions[0].y) {
-				subir = false;
-			}
-		}
-		else {
-			transBall -= 0.001f;
-			if (transBall <= 0.0f) {
+	if (Anim) {
+		//Movimiento orbital constante de la bola y el perrito
+		rotBall += 60.0f * deltaTime;
+		rotDog -= 60.0f * deltaTime;
+
+		// Se normalizan los valores en caso de superar 360 o ser menores a 0 para que mantengan
+		//su trayectoria
+		if (rotDog < 0.0f) rotDog += 360.0f;
+		if (rotDog >= 360.0f) rotDog -= 360.0f;
+		if (rotBall >= 360.0f) rotBall -= 360.0f;
+		if (rotBall < 0.0f) rotBall += 360.0f;
+		//Cuando se encuentran los dos modelos para el choque
+		if (!golpear) {
+			// se cruzan cuando la suma es 360 o 0.
+			if (abs(rotDog - rotBall) < 5.0f || abs(abs(rotDog - rotBall) - 360.0f) < 5.0f) {
+				golpear = true;
 				subir = true;
 			}
 		}
+
+		//Lógica del Choque
+		if (golpear) {
+			if (subir) {
+				//Aquí se acercan para chocar
+				transDog += 3.0f * deltaTime;   // El perro sube desde 0.0
+				transBall -= 2.0f * deltaTime;  // La bola baja desde 1.0 
+
+				// cuando el perro llega a su altura máxima chocarán
+				if (transDog >= 0.7f) {
+					subir = false; // se hace el cambio para que la pelota rebote
+				}
+			}
+			else {
+				//Rebote tras el choque
+				transDog -= 2.5f * deltaTime;  // El perro regresa al suelo
+				transBall += 8.0f * deltaTime; // La bola sale disparada hacia arriba rápido
+				transBall -= 5.0f * deltaTime;
+				// Resetear al llegar al suelo
+				if (transDog <= 0.0f) {
+					transDog = 0.0f;
+				}
+
+				// La animación termina cuando la bola recupera su altura original
+				if (transBall >= 1.0f && transDog == 0.0f) {
+					transBall = 1.0f;
+					golpear = false; // Permitir que se vuelva a activar el golpe
+				}
+			}
+		}
 	}
 }
+//void Animation2() {
+//	if (AnimBall2) {
+//		rotBall += 40.0f * deltaTime;
+//		/*if (subir) {
+//			transBall += 0.001f;
+//			if (transBall >= pointLightPositions[0].y) {
+//				subir = false;
+//			}
+//		}
+//		else {
+//			transBall -= 0.001f;
+//			if (transBall <= 0.0f) {
+//				subir = true;
+//			}
+//		}*/
+//	}
+//	else {
+//
+//	}
+//}
 
 void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 {

@@ -1,5 +1,5 @@
-//Previo #11                                    Galindo Granados Abner Alejandro
-//Fecha de entrega: 19 abril de 2026            320001567 
+//Práctica #11                                    Galindo Granados Abner Alejandro
+//Fecha de entrega: 26 abril de 2026              320001567 
 #include <iostream>
 #include <cmath>
 
@@ -509,45 +509,101 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 	
 }
 void Animation() {
-	if (AnimBall)
-	{
+	if (AnimBall) {
 		rotBall += 0.4f;
-		//printf("%f", rotBall);
 	}
-	
-	if (AnimDog)
-	{
-		rotDog -= 0.6f;
-		//printf("%f", rotBall);
-	}
-	if (dogAnim == 1) { //Walk animation
-		if (!step) {    //state 1
-			RLegs += 0.3f;
-			FLegs += 0.3f;
-			head += 0.3f;
-			tail += 0.3f;
-			if(RLegs >= 15.0f) { //Condition
-				step = true;
-			}
 
+	if (dogAnim == 1) {
+		// 1. ANIMACIÓN DE PATAS (Oscilación constante)
+		if (!step) {
+			RLegs += 0.8f; 
+			FLegs += 0.8f;
+			head += 0.8;
+			tail += 0.8f;
+			if (RLegs >= 15.0f) 
+				step = true;
 		}
 		else {
-			RLegs -= 0.3f;
-			FLegs -= 0.3f;
-			head -= 0.3f;
-			tail -= 0.3f;
-			if (RLegs <= -15.0f) { //Condition
+			RLegs -= 0.8f; 
+			FLegs -= 0.8f;
+			head -= 0.8;
+			tail -= 0.8f;
+			if (RLegs <= -15.0f) 
 				step = false;
-			}
-		}
-		dogPos.z += 0.001f;	
-		if(dogPos.z >= 2.3f) {
-			dogAnim = 0;
-			AnimDog = false;
 		}
 
+		// 2. CONFIGURACIÓN DE MOVIMIENTO
+		float velocidadAvance = 0.005f;
+		static int estadoRuta = 0; 
+		float velocidadGiro = 0.5f;
+
+		// El perro SIEMPRE avanza hacia donde mira
+		dogPos.z += velocidadAvance * cos(glm::radians(dogRot));
+		dogPos.x += velocidadAvance * sin(glm::radians(dogRot));
+
+		// 3. LÓGICA DE LA MÁQUINA DE ESTADOS
+
+		// ESTADO 0: Primer tramo recto (Hacia adelante en Z)
+		if (estadoRuta == 0) {
+			// avanza hacia z positivo, una vez que llega al límite gira 90 grados hacia la dirección en x positivo
+			if (dogPos.z > 1.5f) {
+				dogRot += velocidadGiro;
+				if (dogRot >= 90.0f) {
+					dogRot = 90.0f;
+					estadoRuta = 1; 
+				}
+			}
+		}
+
+		// ESTADO 1: Avanza en X y empieza a girar para bajar
+		if (estadoRuta == 1) {
+			//Una vez que el perrito llega al límite en x gira 180 grados para seguir la trayectoria 
+			//hacia -z
+			if (dogPos.x > 1.5f) {
+				dogRot += velocidadGiro;
+				if (dogRot >= 180.0f) {
+					dogRot = 180.0f;
+					estadoRuta = 2;
+				}
+			}
+		}
+
+		// ESTADO 2: Baja en Z
+		if (estadoRuta == 2) {
+			//El perrio va en su trayectoria hacia -z hasta llegar al límite, una vez que lo detecta
+			// gira 270 grados para ponerse en dirección hacia -x
+			if (dogPos.z < -1.5f) { 
+				dogRot += velocidadGiro;
+				if (dogRot >= 270.0f) {
+					dogRot = 270.0f;
+					estadoRuta = 3;
+				}
+			}
+		}
+
+		// ESTADO 3: TRAMO DIAGONAL FINAL
+		if (estadoRuta == 3) {
+			// Al llegar al límite en la parte de abajo (-x) el perrito girará 45 grados, es decir,
+			// se colocará en la diagonal final y avanzará hacia la posición incial.
+			if (dogPos.x < -1.5f) {
+				dogRot += velocidadGiro;
+				if (dogRot >= 405.0f) {
+					dogRot = 45.0f;
+					estadoRuta = 4;
+				} 
+			}
+		}
+		if (estadoRuta == 4) {
+			//Durante el tramo de la diagonal, si vuelve a la posición de origen se detiene la animación
+			//y se coloca en la posición original el perro, al igual que el estado se pone en 0
+			if (dogPos.z >= 0.0f && dogPos.x >= 0.0f) {
+				dogPos = glm::vec3(0.0f);
+				dogRot = 0.0f;
+				estadoRuta = 0;
+				dogAnim = 0; // Fin de la animación
+			}
+		}
 	}
-	
 }
 
 void MouseCallback(GLFWwindow *window, double xPos, double yPos)

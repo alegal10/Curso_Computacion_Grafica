@@ -1,5 +1,5 @@
-//Previo #12                                Galindo Granados Abner Alejandro
-//Fecha de entrega: 28 abril de 2026        320001567
+//Práctica #12                                Galindo Granados Abner Alejandro
+//Fecha de entrega: 02 mayo de 2026           320001567
 #include <iostream>
 #include <cmath>
 
@@ -26,6 +26,7 @@
 #include "Camera.h"
 #include "Model.h"
 
+#include <fstream> // Para manejo de archivos
 
 // Function prototypes
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -111,13 +112,14 @@ float head = 0.0f;
 float tail = 0.0f;
 float FRightLeg = 0.0f;
 float FLeftLeg = 0.0f;
+float rotDogZ = 0.0f;
 
 
 //KeyFrames
 float dogPosX , dogPosY , dogPosZ  ;
 
-#define MAX_FRAMES 9
-int i_max_steps = 2000;//190;
+#define MAX_FRAMES 29
+int i_max_steps = 900;
 int i_curr_steps = 0;
 typedef struct _frame {
 	
@@ -137,10 +139,12 @@ typedef struct _frame {
 	float incFLegs;*/
 	float RLegs;
 	float incRLegs;
-	float FRightLeg = 0.0f;
-	float FLeftLeg = 0.0f;
+	float FRightLeg;
+	float FLeftLeg;
 	float incFRightLeg;
 	float incFLeftLeg;
+	float rotDogZ;
+	float incRotDogZ;
 }FRAME;
 
 FRAME KeyFrame[MAX_FRAMES];
@@ -164,8 +168,7 @@ void saveFrame(void)
 	KeyFrame[FrameIndex].RLegs = RLegs;
 	KeyFrame[FrameIndex].FRightLeg = FRightLeg;
 	KeyFrame[FrameIndex].FLeftLeg = FLeftLeg;
-
-
+	KeyFrame[FrameIndex].rotDogZ = rotDogZ;
 	FrameIndex++;
 }
 
@@ -181,7 +184,7 @@ void resetElements(void)
 	tail = KeyFrame[0].tail;
 	FRightLeg = KeyFrame[0].FRightLeg;
 	FLeftLeg = KeyFrame[0].FLeftLeg;
-
+	rotDogZ = KeyFrame[0].rotDogZ;
 
 }
 void interpolation(void)
@@ -197,9 +200,41 @@ void interpolation(void)
 	KeyFrame[playIndex].incRLegs = (KeyFrame[playIndex + 1].RLegs - KeyFrame[playIndex].RLegs) / i_max_steps;
 	KeyFrame[playIndex].incFRightLeg = (KeyFrame[playIndex + 1].FRightLeg - KeyFrame[playIndex].FRightLeg) / i_max_steps;
 	KeyFrame[playIndex].incFLeftLeg = (KeyFrame[playIndex + 1].FLeftLeg - KeyFrame[playIndex].FLeftLeg) / i_max_steps;
+	KeyFrame[playIndex].incRotDogZ = (KeyFrame[playIndex + 1].rotDogZ - KeyFrame[playIndex].rotDogZ) / i_max_steps;
 
 }
+void saveToFile() {
+	std::ofstream file("datos_animacion.txt");
+	if (file.is_open()) {
+		// Guardamos cuántos frames tenemos actualmente
+		file << FrameIndex << std::endl;
+		for (int i = 0; i < FrameIndex; i++) {
+			file << KeyFrame[i].dogPosX << " " << KeyFrame[i].dogPosY << " " << KeyFrame[i].dogPosZ << " "
+				<< KeyFrame[i].rotDog << " " << KeyFrame[i].head << " " << KeyFrame[i].tail << " "
+				<< KeyFrame[i].RLegs << " " << KeyFrame[i].FRightLeg << " " << KeyFrame[i].FLeftLeg << " " 
+				<< KeyFrame[i].rotDogZ << std::endl;
+		}
+		file.close();
+		printf("Animacion guardada en datos_animacion.txt\n");
+	}
+}
 
+void loadFromFile() {
+	std::ifstream file("datos_animacion.txt");
+	if (file.is_open()) {
+		file >> FrameIndex; // Leemos cuántos frames hay guardados
+		for (int i = 0; i < FrameIndex; i++) {
+			file >> KeyFrame[i].dogPosX >> KeyFrame[i].dogPosY >> KeyFrame[i].dogPosZ >>
+				KeyFrame[i].rotDog >> KeyFrame[i].head >> KeyFrame[i].tail >>
+				KeyFrame[i].RLegs >> KeyFrame[i].FRightLeg >> KeyFrame[i].FLeftLeg >> KeyFrame[i].rotDogZ;
+		}
+		file.close();
+		printf("Animacion cargada: %d frames encontrados.\n", FrameIndex);
+	}
+	else {
+		printf("No se encontro archivo de animacion previa.\n");
+	}
+}
 
 
 // Deltatime
@@ -292,8 +327,10 @@ int main()
 		KeyFrame[i].FLeftLeg = 0;
 		KeyFrame[i].incFRightLeg = 0;
 		KeyFrame[i].incFLeftLeg = 0;
+		KeyFrame[i].rotDogZ = 0;
+		KeyFrame[i].incRotDogZ = 0;
 	}
-
+	loadFromFile(); // Cargar datos existentes
 
 	// First, set the container's VAO (and VBO)
 	GLuint VBO, VAO,EBO;
@@ -426,6 +463,7 @@ int main()
 		//Body
 		modelTemp= model = glm::translate(model, glm::vec3(dogPosX,dogPosY,dogPosZ));
 		modelTemp= model = glm::rotate(model, glm::radians(rotDog), glm::vec3(1.0f, 0.0f, 0.0f));
+		modelTemp= model = glm::rotate(model, glm::radians(rotDogZ), glm::vec3(0.0f, 0.0f, 1.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		DogBody.Draw(lightingShader);
 		//Head
@@ -547,6 +585,18 @@ void DoMovement()
 		FRightLeg -= 0.1f;
 
 	}
+	if (keys[GLFW_KEY_N])
+	{
+
+		FLeftLeg += 0.1f;
+
+	}
+	if (keys[GLFW_KEY_M])
+	{
+
+		FLeftLeg -= 0.1f;
+
+	}
 	if (keys[GLFW_KEY_8])
 	{
 
@@ -557,6 +607,18 @@ void DoMovement()
 	{
 
 		RLegs -= 0.1f;
+
+	}
+	if (keys[GLFW_KEY_0])
+	{
+
+		rotDogZ += 0.1f;
+
+	}
+	if (keys[GLFW_KEY_1])
+	{
+
+		rotDogZ -= 0.1f;
 
 	}
 	if (keys[GLFW_KEY_Z])
@@ -613,6 +675,7 @@ void DoMovement()
 	{
 		dogPosY -= 0.001f;
 	}
+	
 
 	// Camera controls
 	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
@@ -703,6 +766,10 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 		}
 
 	}
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		saveToFile(); // Guardar los frames actuales al archivo
+	}
 
 
 
@@ -772,6 +839,7 @@ void Animation() {
 			RLegs += KeyFrame[playIndex].incRLegs;
 			FRightLeg += KeyFrame[playIndex].incFRightLeg;
 			FLeftLeg += KeyFrame[playIndex].incFLeftLeg;
+			rotDogZ += KeyFrame[playIndex].incRotDogZ;
 			i_curr_steps++;
 		}
 
